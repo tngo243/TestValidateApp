@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="DownloadedVideoTableViewCell" customModule="TestValidateApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="80"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="414" height="80"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HDF-p5-WQO">
+                        <rect key="frame" x="16" y="8" width="382" height="64"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OVM-6P-4AF">
+                                <rect key="frame" x="8" y="8" width="76.333333333333329" height="48"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jas-rM-tRv">
+                                <rect key="frame" x="100.33333333333334" y="8" width="273.66666666666663" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nbN-Eb-TCm">
+                                <rect key="frame" x="100.33333333333331" y="37" width="208" height="4"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="208" id="q5t-xe-jTd"/>
+                                </constraints>
+                            </progressView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="78a-d7-cNG">
+                                <rect key="frame" x="318" y="29" width="56" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="1OJ-K6-4ka"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" name="AccentColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnCancelDownloadAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="p5d-JF-j8z"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="nbN-Eb-TCm" firstAttribute="leading" secondItem="Jas-rM-tRv" secondAttribute="leading" id="1e2-Va-hYx"/>
+                            <constraint firstAttribute="bottom" secondItem="OVM-6P-4AF" secondAttribute="bottom" constant="8" id="GdA-EJ-1Go"/>
+                            <constraint firstAttribute="trailing" secondItem="Jas-rM-tRv" secondAttribute="trailing" constant="8" id="L39-2h-Ltt"/>
+                            <constraint firstItem="Jas-rM-tRv" firstAttribute="leading" secondItem="OVM-6P-4AF" secondAttribute="trailing" constant="16" id="Wow-fl-9pT"/>
+                            <constraint firstItem="OVM-6P-4AF" firstAttribute="leading" secondItem="HDF-p5-WQO" secondAttribute="leading" constant="8" id="Ynj-QL-WGe"/>
+                            <constraint firstItem="OVM-6P-4AF" firstAttribute="width" secondItem="HDF-p5-WQO" secondAttribute="width" multiplier="1:5" id="fqa-pz-5Ip"/>
+                            <constraint firstItem="78a-d7-cNG" firstAttribute="top" secondItem="Jas-rM-tRv" secondAttribute="bottom" constant="4" id="mXj-fl-7wU"/>
+                            <constraint firstItem="78a-d7-cNG" firstAttribute="centerY" secondItem="nbN-Eb-TCm" secondAttribute="centerY" id="oBm-4m-Dv8"/>
+                            <constraint firstItem="OVM-6P-4AF" firstAttribute="top" secondItem="HDF-p5-WQO" secondAttribute="top" constant="8" id="rLy-vb-2xk"/>
+                            <constraint firstItem="Jas-rM-tRv" firstAttribute="top" secondItem="OVM-6P-4AF" secondAttribute="top" id="rbu-0f-vmT"/>
+                            <constraint firstAttribute="trailing" secondItem="78a-d7-cNG" secondAttribute="trailing" constant="8" id="wps-S6-9C6"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="HDF-p5-WQO" secondAttribute="trailing" constant="16" id="AsI-VV-pZ4"/>
+                    <constraint firstItem="HDF-p5-WQO" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="Y1z-iY-BC4"/>
+                    <constraint firstAttribute="bottom" secondItem="HDF-p5-WQO" secondAttribute="bottom" constant="8" id="ojG-jU-9aZ"/>
+                    <constraint firstItem="HDF-p5-WQO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="vv9-t5-GEZ"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="btnCancelDownload" destination="78a-d7-cNG" id="0aF-82-ttR"/>
+                <outlet property="imgThumb" destination="OVM-6P-4AF" id="d9i-5P-k55"/>
+                <outlet property="lblTitleVideo" destination="Jas-rM-tRv" id="gGX-eL-ze9"/>
+                <outlet property="progressView" destination="nbN-Eb-TCm" id="ARG-vZ-7vb"/>
+            </connections>
+            <point key="canvasLocation" x="72" y="-30"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>
