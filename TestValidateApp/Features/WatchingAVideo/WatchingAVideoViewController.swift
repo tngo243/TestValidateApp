@@ -237,6 +237,12 @@ extension WatchingAVideoViewController: UITableViewDataSource, UITableViewDelega
     }
     let videoItem = videoItems[indexPath.row]
     cell.configure(with: videoItem)
+    cell.onCancelTapped = { [unowned self] videoId in
+      Task {
+        await self.output.cancelDownloadTapped(videoId: videoId)
+      }
+    }
+    
     return cell
   }
 }

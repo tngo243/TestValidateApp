@@ -9,6 +9,10 @@ import UIKit
 
 final class VideoItemTableViewCell: UITableViewCell {
   
+  private var currentVideoItemId: String?
+  // MARK: - Callback
+  var onCancelTapped: ((String) -> Void)?
+  
   // MARK: - UI Elements
   private lazy var containerView: UIView = {
     let view = UIView()
@@ -62,6 +66,7 @@ final class VideoItemTableViewCell: UITableViewCell {
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     setupUI()
+    setupActions()
   }
   
   required init?(coder: NSCoder) {
@@ -110,8 +115,18 @@ final class VideoItemTableViewCell: UITableViewCell {
     ])
   }
   
+  private func setupActions() {
+    cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+  }
+  
+  @objc private func cancelButtonTapped() {
+    guard let currentVideoItemId = currentVideoItemId else {return}
+    onCancelTapped?(currentVideoItemId)
+  }
+  
   // MARK: - Configuration
   func configure(with videoItem: VideoItem) {
+    currentVideoItemId = videoItem.id
     nameLabel.text = videoItem.name
     urlLabel.text = videoItem.url
     

@@ -62,4 +62,15 @@ extension WatchingAVideoInteractor: WatchingAVideoInteractorProtocol {
       
     }
   }
+  
+  func cancelDownload(for videoId: String) async -> Stream? {
+    if let stream = streams.first(where: { $0.id == videoId }) {
+      await VideoPersistenceManager.shared.cancelDownload(for: stream)
+      streams.removeAll { $0.id == videoId }
+      
+      // Return the cancelled stream for UI update
+      return stream
+    }
+    return nil
+  }
 }

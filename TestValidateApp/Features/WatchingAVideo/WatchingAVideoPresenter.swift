@@ -38,9 +38,21 @@ extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
     await interactor.downloadStream(Stream(id: videoItem.id, name: videoItem.name, playlistURL: videoUrl))
   }
   
-  func cancelBtnTapped(videoUrl: String) async {
-    print("cancel download for: \(videoUrl)")
-    // TODO: Implement cancel download logic
+  func cancelDownloadTapped(videoId: String) async {
+    print("cancel download for video ID: \(videoId)")
+    
+    // Cancel the download through interactor and get the cancelled stream
+    if let cancelledStream = await interactor.cancelDownload(for: videoId) {
+      // Create a cancelled video item and update the UI
+      let cancelledVideoItem = VideoItem(
+        id: videoId,
+        name: cancelledStream.name,
+        url: cancelledStream.playlistURL,
+        progress: 0.0,
+        state: .cancelled
+      )
+      view?.updateVideoItem(cancelledVideoItem)
+    }
   }
   
   func playBtnTapped(videoUrl: String) async {

@@ -19,7 +19,7 @@ protocol WatchingAVideoViewOutput: AnyObject {
   func viewIsReady() async
   
   func downloadBtnTapped(videoUrl: String) async
-  func cancelBtnTapped(videoUrl: String) async
+  func cancelDownloadTapped(videoId: String) async
   func playBtnTapped(videoUrl: String) async
 }
 
@@ -35,6 +35,7 @@ protocol WatchingAVideoInteractorProtocol: Actor {
   
   // Download functionality
   func downloadStream(_ s: Stream) async
+  func cancelDownload(for videoId: String) async -> Stream?
 }
 
 @MainActor
