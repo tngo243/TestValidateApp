@@ -8,11 +8,58 @@
 import Foundation
 
 actor WatchingAVideoInteractor {
+  fileprivate var streams: [Stream] = []
+  
+  func getStreams() async -> [Stream] {
+    return streams
+  }
+  
+//  func addStream(from videoItem: VideoItem) async {
+//    let stream = Stream(
+//      id: videoItem.id,
+//      name: videoItem.name,
+//      playlistURL: videoItem.url
+//    )
+//    streams.append(stream)
+//  }
+//  
+  func updateStream(from videoItem: VideoItem) async {
+    let stream = Stream(
+      id: videoItem.id,
+      name: videoItem.name,
+      playlistURL: videoItem.url
+    )
+    if let index = streams.firstIndex(where: { $0.id == stream.id }) {
+      streams[index] = stream
+    }
+  }
+  
+  func removeStream(withId id: String) async {
+    streams.removeAll { $0.id == id }
+  }
+  
+  func getVideoItems() async -> [VideoItem] {
+    // Convert streams to video items for UI display
+    return streams.map { stream in
+      VideoItem(
+        id: stream.id,
+        name: stream.name,
+        url: stream.playlistURL,
+        progress: 0.0,
+        state: .downloading
+      )
+    }
+  }
 }
 
 extension WatchingAVideoInteractor: WatchingAVideoInteractorProtocol {
   func downloadStream(_ s: Stream) async {
-    try? await VideoPersistenceManager.shared.downloadStream(for: s)
+    do {
+      try await VideoPersistenceManager.shared.downloadStream(for: s)
+      
+      streams.append(s)
+    } catch {
+      
+    }
   }
-
 }

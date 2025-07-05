@@ -9,6 +9,7 @@ import UIKit
 
 @objc final class WatchingAVideoViewController: UIViewController {
   private let output: any WatchingAVideoViewOutput
+  private var videoItems: [VideoItem] = []
   
   // MARK: - UI Elements
   private lazy var mainStackView: UIStackView = {
@@ -83,6 +84,10 @@ import UIKit
     tableView.estimatedRowHeight = 75.0
     tableView.rowHeight = UITableView.automaticDimension
     tableView.translatesAutoresizingMaskIntoConstraints = false
+    tableView.register(VideoItemTableViewCell.self, forCellReuseIdentifier: "VideoItemCell")
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "DefaultCell")
+    tableView.delegate = self
+    tableView.dataSource = self
     return tableView
   }()
   
@@ -197,8 +202,13 @@ import UIKit
   
   @objc func handleAssetDownloadProgress(_ notification: NSNotification) {
     DispatchQueue.main.async {
-          if let percent = notification.userInfo?[Asset.Keys.percentDownloaded] as? Double {
+          if let id = notification.userInfo?[Asset.Keys.id] as? String,
+             let rowIndex = self.videoItems.firstIndex(where: { $0.id == id }),
+            let percent = notification.userInfo?[Asset.Keys.percentDownloaded] as? Double {
             self.label.text = "Downloading: \(String(format: "%.2f", percent * 100.0))%"
+            self.videoItems[rowIndex].progress = percent
+            self.tableView.reloadRows(at: [IndexPath(row: rowIndex, section: 0)], with: .automatic)
+            
           }
       }
   }
@@ -215,9 +225,39 @@ import UIKit
 
 }
 
-extension WatchingAVideoViewController: WatchingAVideoViewInput {
-  func updateVideoItem(_ state: VideoItemState) {
-    
+// MARK: - UITableViewDataSource & UITableViewDelegate
+extension WatchingAVideoViewController: UITableViewDataSource, UITableViewDelegate {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return videoItems.count
   }
   
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: "VideoItemCell", for: indexPath) as? VideoItemTableViewCell else {
+      return UITableViewCell()
+    }
+    let videoItem = videoItems[indexPath.row]
+    cell.configure(with: videoItem)
+    return cell
+  }
+}
+
+extension WatchingAVideoViewController: WatchingAVideoViewInput {
+  func updateVideoItems(_ items: [VideoItem]) {
+    videoItems = items
+    tableView.reloadData()
+  }
+  
+  func addVideoItem(_ item: VideoItem) {
+    videoItems.append(item)
+    let indexPath = IndexPath(row: videoItems.count - 1, section: 0)
+    tableView.insertRows(at: [indexPath], with: .automatic)
+  }
+  
+  func updateVideoItem(_ item: VideoItem) {
+    if let index = videoItems.firstIndex(where: { $0.id == item.id }) {
+      videoItems[index] = item
+      let indexPath = IndexPath(row: index, section: 0)
+      tableView.reloadRows(at: [indexPath], with: .none)
+    }
+  }
 }

@@ -52,6 +52,8 @@ extension Asset {
  */
 extension Asset {
     struct Keys {
+        static let id = "AssetStreamID"
+      
         /**
          Key for the Asset name, used for `AssetDownloadProgressNotification` and
          `AssetDownloadStateChangedNotification` Notifications as well as

@@ -14,7 +14,6 @@ final class WatchingAVideoPresenter {
   
   init(interactor: some WatchingAVideoInteractorProtocol) {
     self.interactor = interactor
-    
   }
 }
 
@@ -22,9 +21,21 @@ final class WatchingAVideoPresenter {
 extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
   func downloadBtnTapped(videoUrl: String) async {
     print("download")
-//    await interactor.downloadStream(Stream(name: "raw text", playlistURL: videoUrl))
-
-    await interactor.downloadStream(Stream(name: "Basic Stream", playlistURL: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8"))
+    
+    // Create a new VideoItem for the download
+    let videoItem = VideoItem(
+      id: UUID().uuidString,
+      name: "Video \(Date().timeIntervalSince1970)",
+      url: videoUrl,
+      progress: 0.0,
+      state: .downloading
+    )
+    
+    // Update the VC with the video item
+    view?.addVideoItem(videoItem)
+    
+    // Start the download
+    await interactor.downloadStream(Stream(id: videoItem.id, name: videoItem.name, playlistURL: videoUrl))
   }
   
   func cancelBtnTapped(videoUrl: String) async {
@@ -38,5 +49,8 @@ extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
   }
   
   func viewIsReady() async {
+    // Load existing video items
+//    let videoItems = await interactor.getVideoItems()
+//    view?.updateVideoItems(videoItems)
   }
 }

@@ -12,11 +12,13 @@ struct Stream: Codable, Sendable {
     // MARK: Types
     
     enum CodingKeys: String, CodingKey {
+        case id = "id"
         case name = "name"
         case playlistURL = "playlist_url"
     }
     
     // MARK: Properties
+    let id: String
     
     /// The name of the stream.
     let name: String
@@ -24,10 +26,6 @@ struct Stream: Codable, Sendable {
     /// The URL pointing to the HLS stream.
     let playlistURL: String
   
-  init(name: String, playlistURL: String) {
-    self.name = name
-    self.playlistURL = playlistURL
-  }
 }
 
 extension Stream: Equatable {

@@ -42,6 +42,7 @@ actor VideoPersistenceManager {
           
             Task { @MainActor in
                 var userInfo = [String: Any]()
+                userInfo[Asset.Keys.id] = stream.id
                 userInfo[Asset.Keys.name] = stream.name
                 userInfo[Asset.Keys.percentDownloaded] = progress.fractionCompleted
               print("thiennq ===== .AssetDownloadProgress >> ", userInfo)
@@ -52,6 +53,7 @@ actor VideoPersistenceManager {
         task.resume()
         
         var userInfo = [String: Any]()
+        userInfo[Asset.Keys.id] = stream.id
         userInfo[Asset.Keys.name] = stream.name
         userInfo[Asset.Keys.downloadState] = Asset.DownloadState.downloading.rawValue
       sleep(9)
@@ -86,6 +88,7 @@ actor VideoPersistenceManager {
                     try FileManager.default.removeItem(at: url)
                     userDefaults.removeObject(forKey: stream.name)
                     var userInfo = [String: Any]()
+                    userInfo[Asset.Keys.id] = stream.id
                     userInfo[Asset.Keys.name] = stream.name
                     userInfo[Asset.Keys.downloadState] = Asset.DownloadState.notDownloaded.rawValue
                     NotificationCenter.default.post(name: .AssetDownloadStateChanged, object: nil, userInfo: userInfo)
@@ -107,6 +110,7 @@ actor VideoPersistenceManager {
         guard let asset = activeDownloads[task] else { return }
         let userDefaults = UserDefaults.standard
         var userInfo = [String: Any]()
+        userInfo[Asset.Keys.id] = asset.stream.id
         userInfo[Asset.Keys.name] = asset.stream.name
         if let error = error as NSError? {
             switch (error.domain, error.code) {

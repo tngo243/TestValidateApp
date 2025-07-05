@@ -9,9 +9,9 @@ import Foundation
 
 @MainActor
 protocol WatchingAVideoViewInput: AnyObject {
-  func updateVideoItem(_ state: VideoItemState)
-//  func playBtnTapped(videoUrl: String) 
-
+  func updateVideoItems(_ items: [VideoItem])
+  func addVideoItem(_ item: VideoItem)
+  func updateVideoItem(_ item: VideoItem)
 }
 
 @MainActor
@@ -21,12 +21,20 @@ protocol WatchingAVideoViewOutput: AnyObject {
   func downloadBtnTapped(videoUrl: String) async
   func cancelBtnTapped(videoUrl: String) async
   func playBtnTapped(videoUrl: String) async
-
 }
 
 protocol WatchingAVideoInteractorProtocol: Actor {
-  func downloadStream(_ s: Stream) async
+  // Stream management methods (accept VideoItem for mapping)
+  func getStreams() async -> [Stream]
+//  func addStream(from videoItem: VideoItem) async
+  func updateStream(from videoItem: VideoItem) async
+  func removeStream(withId id: String) async
   
+  // VideoItem conversion for UI
+//  func getVideoItems() async -> [VideoItem]
+  
+  // Download functionality
+  func downloadStream(_ s: Stream) async
 }
 
 @MainActor
