@@ -18,9 +18,9 @@
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
   self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
   self.window.windowScene = (UIWindowScene *)scene;
-//  self.window.rootViewController = [[UINavigationController alloc]
-//                                    initWithRootViewController: WatchingAVideoViewController.new];
-  self.window.rootViewController = [[WatchingAVideoViewController alloc]init];
+  self.window.rootViewController = [[UINavigationController alloc]
+                                    initWithRootViewController: WatchingAVideoViewController.new];
+//  self.window.rootViewController = [[WatchingAVideoViewController alloc]init];
   self.window.backgroundColor = [UIColor whiteColor];
   [self.window makeKeyAndVisible];
 }
