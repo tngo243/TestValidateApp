@@ -65,16 +65,6 @@ import UIKit
     return button
   }()
   
-  private lazy var cancelButton: UIButton = {
-    let button = UIButton(type: .system)
-    button.setTitle("Cancel", for: .normal)
-    button.setTitleColor(.white, for: .normal)
-    button.backgroundColor = .systemRed
-    button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-    button.layer.cornerRadius = 8
-    button.translatesAutoresizingMaskIntoConstraints = false
-    return button
-  }()
   
   private lazy var playButton: UIButton = {
     let button = UIButton(type: .system)
@@ -87,11 +77,13 @@ import UIKit
     return button
   }()
   
-  private lazy var playerView: UIView = {
-    let view = UIView()
-    view.backgroundColor = .red
-    view.translatesAutoresizingMaskIntoConstraints = false
-    return view
+  private lazy var tableView: UITableView = {
+    let tableView = UITableView()
+    tableView.backgroundColor = .black.withAlphaComponent(0.2)
+    tableView.estimatedRowHeight = 75.0
+    tableView.rowHeight = UITableView.automaticDimension
+    tableView.translatesAutoresizingMaskIntoConstraints = false
+    return tableView
   }()
   
   init() {
@@ -134,11 +126,17 @@ import UIKit
     
     // Add buttons to button stack view
     buttonStackView.addArrangedSubview(downloadButton)
-    buttonStackView.addArrangedSubview(cancelButton)
     buttonStackView.addArrangedSubview(playButton)
     
-    // Add player view to main stack view
-    mainStackView.addArrangedSubview(playerView)
+    // Add table view to main stack view
+    mainStackView.addArrangedSubview(tableView)
+
+    // Set hugging/compression priorities
+    textField.setContentHuggingPriority(.required, for: .vertical)
+    label.setContentHuggingPriority(.required, for: .vertical)
+    buttonStackView.setContentHuggingPriority(.required, for: .vertical)
+    tableView.setContentHuggingPriority(.defaultLow, for: .vertical)
+    tableView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
     
     // Setup constraints
     NSLayoutConstraint.activate([
@@ -146,16 +144,13 @@ import UIKit
       mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
       mainStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
       mainStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-      mainStackView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+      mainStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
       
       // Text field height
       textField.heightAnchor.constraint(equalToConstant: 44),
       
       // Button stack view constraints
-      buttonStackView.heightAnchor.constraint(equalToConstant: 44),
-      
-      // Player view constraints - aspect ratio 2.23:1 (width:height)
-      playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 1.0/2.23),
+      buttonStackView.heightAnchor.constraint(equalToConstant: 44)
     ])
   }
   
@@ -171,16 +166,7 @@ import UIKit
       },
       for: .touchUpInside)
     
-    cancelButton.addAction(
-      UIAction { [weak self, unowned output] _ in
-        Task {
-          guard let videoUrl = self?.textField.text, !videoUrl.isEmpty else {
-            return
-          }
-          await output.cancelBtnTapped(videoUrl: videoUrl)
-        }
-      },
-      for: .touchUpInside)
+
     
     playButton.addAction(
       UIAction { [weak self, unowned output] _ in
