@@ -56,7 +56,7 @@ actor VideoPersistenceManager {
         userInfo[Asset.Keys.id] = stream.id
         userInfo[Asset.Keys.name] = stream.name
         userInfo[Asset.Keys.downloadState] = Asset.DownloadState.downloading.rawValue
-      sleep(9)
+
       await MainActor.run {
         NotificationCenter.default.post(name: .AssetDownloadStateChanged, object: nil, userInfo: userInfo)
       }
