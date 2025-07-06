@@ -49,8 +49,6 @@ final class VideoItemTableViewCell: UITableViewCell {
     return label
   }()
   
-
-  
   private lazy var cancelButton: UIButton = {
     let button = UIButton(type: .system)
     button.setTitle("Cancel", for: .normal)

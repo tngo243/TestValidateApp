@@ -16,7 +16,6 @@ protocol WatchingAVideoViewInput: AnyObject {
 
 @MainActor
 protocol WatchingAVideoViewOutput: AnyObject {
-  func viewIsReady() async
   func didRestoreState() async
   
   func downloadBtnTapped(videoUrl: String) async
@@ -27,19 +26,9 @@ protocol WatchingAVideoViewOutput: AnyObject {
 
 protocol WatchingAVideoInteractorProtocol: Actor {
   func didRestoreState() async -> [Asset]
-  // Stream management methods (accept VideoItem for mapping)
-  func getStreams() async -> [Stream]
-//  func addStream(from videoItem: VideoItem) async
-  func updateStream(from videoItem: VideoItem) async
-  func removeStream(withId id: String) async
-  
-  // VideoItem conversion for UI
-//  func getVideoItems() async -> [VideoItem]
-  
   // Download functionality
   func downloadStream(_ s: Stream) async
   func cancelDownload(for videoId: String) async -> Stream?
-  
   // Load local asset
   func loadLocalAsset(videoName: String) async -> URL?
 }

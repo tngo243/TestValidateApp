@@ -95,9 +95,6 @@ import UIKit
     setupUI()
     setupActions()
     setupNotification()
-    Task {
-      await output.viewIsReady()
-    }
   }
   
   // MARK: - UI Setup
@@ -188,13 +185,13 @@ import UIKit
   
   @objc func handleAssetDownloadProgress(_ notification: NSNotification) {
     DispatchQueue.main.async {
-          if let id = notification.userInfo?[Asset.Keys.id] as? String,
-             let rowIndex = self.videoItems.firstIndex(where: { $0.id == id }),
-            let percent = notification.userInfo?[Asset.Keys.percentDownloaded] as? Double {
-            self.videoItems[rowIndex].progress = percent
-            self.tableView.reloadRows(at: [IndexPath(row: rowIndex, section: 0)], with: .automatic)
-          }
+      if let id = notification.userInfo?[Asset.Keys.id] as? String,
+         let rowIndex = self.videoItems.firstIndex(where: { $0.id == id }),
+         let percent = notification.userInfo?[Asset.Keys.percentDownloaded] as? Double {
+        self.videoItems[rowIndex].progress = percent
+        self.tableView.reloadRows(at: [IndexPath(row: rowIndex, section: 0)], with: .automatic)
       }
+    }
   }
 
   @objc func handleAssetDownloadStateChanged(_ notification: NSNotification) {
