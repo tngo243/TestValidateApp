@@ -10,7 +10,6 @@ import UIKit
 @objc final class WatchingAVideoViewController: UIViewController {
   private let output: any WatchingAVideoViewOutput
   private var videoItems: [VideoItem] = []
-  
   // MARK: - UI Elements
   private lazy var mainStackView: UIStackView = {
     let stackView = UIStackView()
@@ -25,24 +24,13 @@ import UIKit
   private lazy var textField: UITextField = {
     let textField = UITextField()
     textField.placeholder = "Enter Video URL..."
-    textField.text = kHLSUrl as String
+//    textField.text = kHLSUrl as String
     textField.borderStyle = .roundedRect
     textField.backgroundColor = .white
     textField.textColor = .black
     textField.font = UIFont.systemFont(ofSize: 16)
     textField.translatesAutoresizingMaskIntoConstraints = false
     return textField
-  }()
-  
-  private lazy var label: UILabel = {
-    let label = UILabel()
-    label.text = "Download process"
-    label.textColor = .black
-    label.font = UIFont.systemFont(ofSize: 16)
-    label.textAlignment = .left
-    label.numberOfLines = 0
-    label.translatesAutoresizingMaskIntoConstraints = false
-    return label
   }()
   
   private lazy var buttonStackView: UIStackView = {
@@ -65,8 +53,6 @@ import UIKit
     button.translatesAutoresizingMaskIntoConstraints = false
     return button
   }()
-  
-  
   private lazy var playButton: UIButton = {
     let button = UIButton(type: .system)
     button.setTitle("Play", for: .normal)
@@ -118,31 +104,22 @@ import UIKit
   private func setupUI() {
     view.backgroundColor = .systemBackground
     title = "Watching a video"
-    
     // Add main stack view to view
     view.addSubview(mainStackView)
-    
     // Add text field and label to stack view
     mainStackView.addArrangedSubview(textField)
-    mainStackView.addArrangedSubview(label)
-    
     // Add button stack view to main stack view
     mainStackView.addArrangedSubview(buttonStackView)
-    
     // Add buttons to button stack view
     buttonStackView.addArrangedSubview(downloadButton)
     buttonStackView.addArrangedSubview(playButton)
-    
     // Add table view to main stack view
     mainStackView.addArrangedSubview(tableView)
-
     // Set hugging/compression priorities
     textField.setContentHuggingPriority(.required, for: .vertical)
-    label.setContentHuggingPriority(.required, for: .vertical)
     buttonStackView.setContentHuggingPriority(.required, for: .vertical)
     tableView.setContentHuggingPriority(.defaultLow, for: .vertical)
     tableView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-    
     // Setup constraints
     NSLayoutConstraint.activate([
       // Main stack view constraints - full screen
@@ -162,21 +139,18 @@ import UIKit
       UIAction { [weak self, unowned output] _ in
         let tfText = self?.textField.text
         Task {
-          guard let videoUrl = tfText?.trimmingCharacters(in: .whitespacesAndNewlines), !videoUrl.isEmpty else {
+          guard let videoUrl = tfText?.trimmingCharacters(in: .whitespacesAndNewlines) else {
             return
           }
           await output.downloadBtnTapped(videoUrl: videoUrl)
         }
       },
       for: .touchUpInside)
-    
-
-    
     playButton.addAction(
       UIAction { [weak self, unowned output] _ in
         let tfText = self?.textField.text
         Task {
-          guard let videoUrl = tfText?.trimmingCharacters(in: .whitespacesAndNewlines), !videoUrl.isEmpty else {
+          guard let videoUrl = tfText?.trimmingCharacters(in: .whitespacesAndNewlines) else {
             return
           }
           await output.playBtnTapped(videoUrl: videoUrl)
@@ -204,6 +178,12 @@ import UIKit
       name: Notification.Name.AssetPersistenceManagerDidRestoreState,
       object: nil
     )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleError(_:)),
+      name: .errorOccurred,
+      object: nil
+    )
   }
   
   @objc func handleAssetDownloadProgress(_ notification: NSNotification) {
@@ -211,10 +191,8 @@ import UIKit
           if let id = notification.userInfo?[Asset.Keys.id] as? String,
              let rowIndex = self.videoItems.firstIndex(where: { $0.id == id }),
             let percent = notification.userInfo?[Asset.Keys.percentDownloaded] as? Double {
-            self.label.text = "Downloading: \(String(format: "%.2f", percent * 100.0))%"
             self.videoItems[rowIndex].progress = percent
             self.tableView.reloadRows(at: [IndexPath(row: rowIndex, section: 0)], with: .automatic)
-            
           }
       }
   }
@@ -232,6 +210,24 @@ import UIKit
   @objc func handleAssetPersistenceManagerDidRestoreState(_ notification: NSNotification) {
     Task {
       await output.didRestoreState()
+    }
+  }
+  
+  @objc private func handleError(_ notification: NSNotification) {
+    guard let error = notification.userInfo?[ErrorNotification.errorKey] as? Error else { return }
+    let message: String
+    if let tvaError = error as? TVAError {
+      message = tvaError.errorDescription ?? "An unknown error occurred"
+    } else {
+      message = error.localizedDescription
+    }
+    Task { @MainActor [weak self]  in
+      await self?.popupAlert(
+        title: "Error",
+        message: message,
+        actionTitles: ["OK"],
+        actions: [{ _ in }]
+      )
     }
   }
 }

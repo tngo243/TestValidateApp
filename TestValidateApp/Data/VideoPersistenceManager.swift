@@ -115,7 +115,7 @@ actor VideoPersistenceManager {
                           bookmarkDataIsStale: &bookmarkDataIsStale)
         
         if bookmarkDataIsStale {
-          fatalError("Bookmark data is stale!")
+          videoLogger.warning("Bookmark data is stale for key: \(key)")
         }
         
         let urlAsset = AVURLAsset(url: url)
@@ -161,7 +161,7 @@ actor VideoPersistenceManager {
         
         return url
       } catch {
-        videoLogger.error("Failed to load bookmark for key \(videoName): \(error.localizedDescription)")
+        videoLogger.warning("Failed to load bookmark for key \(videoName): \(error.localizedDescription)")
         userDefaults.removeObject(forKey: videoName)
       }
     }
@@ -183,7 +183,7 @@ actor VideoPersistenceManager {
                     userInfo[Asset.Keys.downloadState] = Asset.DownloadState.notDownloaded.rawValue
                     NotificationCenter.default.post(name: .AssetDownloadStateChanged, object: nil, userInfo: userInfo)
                 } catch {
-                    videoLogger.error("Error deleting file: \(error.localizedDescription)")
+                  videoLogger.warning("Error deleting file: \(error.localizedDescription)")
                 }
             }
         }
@@ -199,7 +199,7 @@ actor VideoPersistenceManager {
     func handleDownloadFinished(task: AVAssetDownloadTask, error: Error?) async {
       guard let asset = activeDownloads.removeValue(forKey: task) else { return }
       guard let location = willDownloadToUrlMap.removeValue(forKey: task) else {
-        videoLogger.error("No download location found for task")
+        videoLogger.warning("No download location found for task")
         return
       }
       
@@ -214,6 +214,7 @@ actor VideoPersistenceManager {
                 userInfo[Asset.Keys.downloadState] = Asset.DownloadState.notDownloaded.rawValue
             default:
                 videoLogger.error("Unexpected error: \(error)")
+              await ErrorNotificationManager.shared.postError(error)
             }
         } else {
                 do {
@@ -223,6 +224,7 @@ actor VideoPersistenceManager {
                     userInfo[Asset.Keys.downloadSelectionDisplayName] = ""
                 } catch {
                     videoLogger.error("Failed to create bookmarkData for download URL.")
+                  await ErrorNotificationManager.shared.postError(TVAError.unknowError("Failed to save video."))
                 }
         }
         await MainActor.run {

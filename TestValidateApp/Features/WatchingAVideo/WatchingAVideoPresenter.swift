@@ -20,6 +20,10 @@ final class WatchingAVideoPresenter {
 @MainActor
 extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
   func downloadBtnTapped(videoUrl: String) async {
+    guard await videoUrl.isValidURL() else {
+      await ErrorNotificationManager.shared.postError(TVAError.invalidUrl)
+      return
+    }
     let videoItem = VideoItem(
       id: UUID().uuidString,
       name: "Video \(Date().timeIntervalSince1970)",
