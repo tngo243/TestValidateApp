@@ -51,6 +51,10 @@ extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
   }
   
   func playBtnTapped(videoUrl: String) async {
+    guard await videoUrl.isValidURL() else {
+      await ErrorNotificationManager.shared.postError(TVAError.invalidUrl)
+      return
+    }
     router?.showPlayerView(videoUrl: videoUrl)
   }
   
