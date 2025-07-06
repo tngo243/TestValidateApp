@@ -30,5 +30,13 @@ extension WatchingAVideoRouter {
     }
   }
   
+  func showPlayerView(videoUrl: URL) {
+    let player = AVPlayer(url: videoUrl)
+    let playerViewController = AVPlayerViewController()
+    playerViewController.player = player
+    viewController.present(playerViewController, animated: true) {
+      playerViewController.player?.play()
+    }
+  }
 }
 

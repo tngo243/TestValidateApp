@@ -53,6 +53,10 @@ actor WatchingAVideoInteractor {
 }
 
 extension WatchingAVideoInteractor: WatchingAVideoInteractorProtocol {
+  func didRestoreState() async -> [Asset] {
+    return await VideoPersistenceManager.shared.localLoaclAssets()
+  }
+  
   func downloadStream(_ s: Stream) async {
     do {
       try await VideoPersistenceManager.shared.downloadStream(for: s)
@@ -72,5 +76,9 @@ extension WatchingAVideoInteractor: WatchingAVideoInteractorProtocol {
       return stream
     }
     return nil
+  }
+  
+  func loadLocalAsset(videoName: String) async -> URL? {
+    return await VideoPersistenceManager.shared.loadLocalAsset(videoName: videoName)
   }
 }

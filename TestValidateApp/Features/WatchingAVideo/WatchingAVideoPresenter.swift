@@ -20,9 +20,6 @@ final class WatchingAVideoPresenter {
 @MainActor
 extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
   func downloadBtnTapped(videoUrl: String) async {
-    print("download")
-    
-    // Create a new VideoItem for the download
     let videoItem = VideoItem(
       id: UUID().uuidString,
       name: "Video \(Date().timeIntervalSince1970)",
@@ -35,6 +32,10 @@ extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
     view?.addVideoItem(videoItem)
     
     // Start the download
+    
+//    https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
+//    https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8
+
     await interactor.downloadStream(Stream(id: videoItem.id, name: videoItem.name, playlistURL: videoUrl))
   }
   
@@ -61,8 +62,26 @@ extension WatchingAVideoPresenter: WatchingAVideoViewOutput {
   }
   
   func viewIsReady() async {
-    // Load existing video items
-//    let videoItems = await interactor.getVideoItems()
-//    view?.updateVideoItems(videoItems)
+  }
+  
+  func didRestoreState() async {
+    let localVideo = await interactor.didRestoreState()
+    localVideo.forEach { asset in
+      view?.addVideoItem(
+        VideoItem(
+          id: "localVideo-\(UUID().uuidString)",
+          name: asset.stream.name,
+          url: asset.stream.playlistURL,
+          progress: 100.0,
+          state: VideoItemState.completed
+        )
+      )
+    }
+  }
+  
+  func videoItemSelected(videoName: String) async {
+    if let localURL = await interactor.loadLocalAsset(videoName: videoName) {
+      router?.showPlayerView(videoUrl: localURL)
+    }
   }
 }

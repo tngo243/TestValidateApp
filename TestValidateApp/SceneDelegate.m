@@ -23,6 +23,9 @@
 //  self.window.rootViewController = [[WatchingAVideoViewController alloc]init];
   self.window.backgroundColor = [UIColor whiteColor];
   [self.window makeKeyAndVisible];
+  
+  // Restore video persistence manager state
+  [VideoPersistenceManagerWrapper restorePersistenceManager];
 }
 
 

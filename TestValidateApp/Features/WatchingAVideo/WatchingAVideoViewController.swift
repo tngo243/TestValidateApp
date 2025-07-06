@@ -150,10 +150,8 @@ import UIKit
       mainStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
       mainStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
       mainStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-      
       // Text field height
       textField.heightAnchor.constraint(equalToConstant: 44),
-      
       // Button stack view constraints
       buttonStackView.heightAnchor.constraint(equalToConstant: 44)
     ])
@@ -162,8 +160,9 @@ import UIKit
   private func setupActions() {
     downloadButton.addAction(
       UIAction { [weak self, unowned output] _ in
+        let tfText = self?.textField.text
         Task {
-          guard let videoUrl = self?.textField.text, !videoUrl.isEmpty else {
+          guard let videoUrl = tfText?.trimmingCharacters(in: .whitespacesAndNewlines), !videoUrl.isEmpty else {
             return
           }
           await output.downloadBtnTapped(videoUrl: videoUrl)
@@ -175,8 +174,9 @@ import UIKit
     
     playButton.addAction(
       UIAction { [weak self, unowned output] _ in
+        let tfText = self?.textField.text
         Task {
-          guard let videoUrl = self?.textField.text, !videoUrl.isEmpty else {
+          guard let videoUrl = tfText?.trimmingCharacters(in: .whitespacesAndNewlines), !videoUrl.isEmpty else {
             return
           }
           await output.playBtnTapped(videoUrl: videoUrl)
@@ -198,6 +198,12 @@ import UIKit
       name: Notification.Name.AssetDownloadStateChanged,
       object: nil
     )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleAssetPersistenceManagerDidRestoreState(_:)),
+      name: Notification.Name.AssetPersistenceManagerDidRestoreState,
+      object: nil
+    )
   }
   
   @objc func handleAssetDownloadProgress(_ notification: NSNotification) {
@@ -212,17 +218,22 @@ import UIKit
           }
       }
   }
-  
 
   @objc func handleAssetDownloadStateChanged(_ notification: NSNotification) {
-    if let name = notification.userInfo?[Asset.Keys.name] as? String,
-       let name = notification.userInfo?[Asset.Keys.downloadState] as? String {
-      
-      
+    if let id = notification.userInfo?[Asset.Keys.id] as? String,
+       let rowIndex = self.videoItems.firstIndex(where: { $0.id == id }),
+       let stateRawValue = notification.userInfo?[Asset.Keys.downloadState] as? Int,
+       let state = Asset.DownloadState.init(rawValue: stateRawValue) {
+      self.videoItems[rowIndex].state = .init(from: state)
+      self.tableView.reloadRows(at: [IndexPath(row: rowIndex, section: 0)], with: .automatic)
     }
   }
-
-
+  
+  @objc func handleAssetPersistenceManagerDidRestoreState(_ notification: NSNotification) {
+    Task {
+      await output.didRestoreState()
+    }
+  }
 }
 
 // MARK: - UITableViewDataSource & UITableViewDelegate
@@ -242,8 +253,16 @@ extension WatchingAVideoViewController: UITableViewDataSource, UITableViewDelega
         await self.output.cancelDownloadTapped(videoId: videoId)
       }
     }
-    
     return cell
+  }
+  
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
+    let videoItem = videoItems[indexPath.row]
+    guard videoItem.state == .completed else { return }
+    Task {
+      await output.videoItemSelected(videoName: videoItem.name)
+    }
   }
 }
 

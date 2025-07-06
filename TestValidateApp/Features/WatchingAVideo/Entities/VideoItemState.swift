@@ -25,6 +25,16 @@ class VideoItem {
 enum VideoItemState {
   case downloading
   case completed
-  case failed(String)
   case cancelled
+  
+  init(from assetState: Asset.DownloadState) {
+    switch assetState {
+    case .downloading:
+      self = .downloading
+    case .downloaded:
+      self = .completed
+    case .notDownloaded:
+      self = .cancelled
+    }
+  }
 }

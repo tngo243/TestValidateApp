@@ -8,7 +8,7 @@
 
 import AVFoundation
 
-final class Asset {
+final actor Asset {
     
     /// The AVURLAsset corresponding to this Asset.
     var urlAsset: AVURLAsset
@@ -21,20 +21,12 @@ final class Asset {
         self.stream = stream
     }
 }
-
-/// Extends `Asset` to conform to the `Equatable` protocol.
-extension Asset: Equatable {
-    static func ==(lhs: Asset, rhs: Asset) -> Bool {
-        return (lhs.stream == rhs.stream) && (lhs.urlAsset == rhs.urlAsset)
-    }
-}
-
 /**
  Extends `Asset` to add a simple download state enumeration used by the sample
  to track the download states of Assets.
  */
 extension Asset {
-    enum DownloadState: String {
+    enum DownloadState: Int {
         
         /// The asset is not downloaded at all.
         case notDownloaded

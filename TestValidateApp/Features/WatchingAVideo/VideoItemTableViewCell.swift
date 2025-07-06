@@ -132,16 +132,11 @@ final class VideoItemTableViewCell: UITableViewCell {
     
     switch videoItem.state {
     case .downloading:
-      progressLabel.text = "Downloading: \(String(format: "%.3f", videoItem.progress * 100.0))%"
-      
+      progressLabel.text = "Downloading: \(String(format: "%.0f", videoItem.progress * 100.0))%"
       progressLabel.isHidden = false
       cancelButton.isHidden = false
     case .completed:
       progressLabel.text = "Completed"
-      progressLabel.isHidden = false
-      cancelButton.isHidden = true
-    case .failed(let error):
-      progressLabel.text = "Failed: \(error)"
       progressLabel.isHidden = false
       cancelButton.isHidden = true
     case .cancelled:
