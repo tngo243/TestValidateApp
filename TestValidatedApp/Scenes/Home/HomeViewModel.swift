@@ -44,14 +44,17 @@ extension HomeViewModel {
                 debugPrint("✅ Downloaded to: \(String(describing: saved))")
                 
                 await MainActor.run {
-                    if let thumbnail = VideoThumbnailHelper.generateHLSThumbnails(for: fileName) {
+                    
+                    VideoThumbnailHelper.generateThumbnail(for: fileName) { thumbnail in
                         do {
-                            try VideoThumbnailHelper.saveThumbnailImage(thumbnail, for: thumbFileName)
+                            if let thumbnail = thumbnail {
+                                try VideoThumbnailHelper.saveThumbnailImage(thumbnail, for: thumbFileName)
+                            }
                         } catch {
                             debugPrint(error.localizedDescription)
                         }
                     }
-                    
+
                     videoUseCase.saveVideo(
                         VideoModel(
                             name: fileName,
@@ -72,6 +75,7 @@ extension HomeViewModel {
         }
     }
     
+    
     func downloadVideo(from url: String,
                        progressCompletion: ((Float) -> Void)? = nil,
                        didFinishTask: (() -> Void)? = nil) {
@@ -79,14 +83,14 @@ extension HomeViewModel {
         let fileName = "video-\(Date()).m3u8"
         let thumbFileName = "thumb-\(Date()).jpeg"
         
-        self.task = VideoDownloadTask(
+        self.hlsTask = HLSVideoDownloadTask(
             url: url,
             fileName: fileName
         )
         
         Task {
             do {
-                let saved = try await self.task?.start { progress in
+                let saved = try await self.hlsTask?.start { progress in
                     debugPrint("⬇️ Progress: \(Int(progress * 100))%")
                     progressCompletion?(progress)
                 }
@@ -94,20 +98,31 @@ extension HomeViewModel {
                 debugPrint("✅ Downloaded to: \(String(describing: saved))")
                 
                 await MainActor.run {
-                    
-                    if let thumbnail = VideoThumbnailHelper.generateThumbnail(for: fileName) {
+                    VideoThumbnailHelper.generateThumbnail(for: fileName) { thumbnail in
                         do {
-                            try VideoThumbnailHelper.saveThumbnailImage(thumbnail, for: thumbFileName)
+                            if let thumbnail = thumbnail {
+                                try VideoThumbnailHelper.saveThumbnailImage(thumbnail, for: thumbFileName)
+                            }
                         } catch {
                             debugPrint(error.localizedDescription)
                         }
                     }
+
+                    videoUseCase.saveVideo(
+                        VideoModel(
+                            name: fileName,
+                            url: url,
+                            thumbnailPath: thumbFileName,
+                            createdAt: Date()
+                        )
+                    )
                     
                     debugPrint("🎉 Video saved to Core Data successfully!")
                 }
                 
                 didFinishTask?()
             } catch {
+                debugPrint(">>", error.localizedDescription)
                 showAlert(title: "Error to download", message: error.localizedDescription)
             }
         }

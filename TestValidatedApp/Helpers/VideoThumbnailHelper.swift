@@ -10,19 +10,61 @@ import AVKit
 import AVFoundation
 
 struct VideoThumbnailHelper {
-    static func generateThumbnail(for fileName: String) -> UIImage? {
+    static func generateThumbnail(for fileName: String, completion: @escaping (UIImage?) -> Void) {
         let fileURL = FileManager.default.urls(for: .documentDirectory,
                                                in: .userDomainMask)[0].appendingPathComponent(fileName)
-        let asset = AVAsset(url: fileURL)
-        let imageGenerator = AVAssetImageGenerator(asset: asset)
-        imageGenerator.appliesPreferredTrackTransform = true
-        let time = CMTime(seconds: 1, preferredTimescale: 60)
-        do {
-            let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
-            return UIImage(cgImage: cgImage)
-        } catch {
-            print("Failed to generate thumbnail: \(error.localizedDescription)")
-            return nil
+        if fileURL.absoluteString.contains(".m3u8") {
+            let asset = AVURLAsset(url: fileURL)
+            let item = AVPlayerItem(asset: asset)
+
+            let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
+            ])
+            item.add(output)
+
+            let player = AVPlayer(playerItem: item)
+            player.isMuted = true
+            player.play()
+
+            // wait for buffer to ready
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                let time = CMTime(seconds: Double.random(in: 1..<50),
+                                  preferredTimescale: 600)
+                var actualTime = CMTime.zero
+
+                if output.hasNewPixelBuffer(forItemTime: time),
+                   let buffer = output.copyPixelBuffer(forItemTime: time, itemTimeForDisplay: &actualTime) {
+
+                    let ciImage = CIImage(cvPixelBuffer: buffer)
+                    let context = CIContext(options: nil)
+
+                    if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+                        let image = UIImage(cgImage: cgImage)
+                        completion(image)
+                    } else {
+                        print("❌ Failed to create CGImage for thumbnail")
+                        completion(nil)
+                    }
+                } else {
+                    print("❌ No pixel buffer at requested time for thumbnail")
+                    completion(nil)
+                }
+
+                player.pause()
+                player.replaceCurrentItem(with: nil)
+            }
+        } else {
+            let asset = AVAsset(url: fileURL)
+            let imageGenerator = AVAssetImageGenerator(asset: asset)
+            imageGenerator.appliesPreferredTrackTransform = true
+            let time = CMTime(seconds: 1, preferredTimescale: 60)
+            do {
+                let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+                completion(UIImage(cgImage: cgImage))
+            } catch {
+                print("Failed to generate thumbnail: \(error)")
+                completion(nil)
+            }
         }
     }
     
