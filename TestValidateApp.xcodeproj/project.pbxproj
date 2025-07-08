@@ -14,7 +14,7 @@
 		F97136EF2E0D234C00873821 /* Exceptions for "TestValidateApp" folder in "TestValidateApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Application/Info.plist,
 			);
 			target = F97136D72E0D234B00873821 /* TestValidateApp */;
 		};
@@ -146,7 +146,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 477H9TWJ76;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TestValidateApp/Info.plist;
+				INFOPLIST_FILE = TestValidateApp/Application/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -174,7 +174,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 477H9TWJ76;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TestValidateApp/Info.plist;
+				INFOPLIST_FILE = TestValidateApp/Application/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
