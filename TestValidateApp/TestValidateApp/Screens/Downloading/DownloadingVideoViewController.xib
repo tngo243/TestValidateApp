@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DownloadingVideoViewController" customModule="TestValidateApp" customModuleProvider="target">
+            <connections>
+                <outlet property="tableView" destination="CK3-en-RDH" id="b69-Db-qev"/>
+                <outlet property="typeTextField" destination="sg2-5V-OZ9" id="UH9-Gj-tph"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KNC-7U-flj">
+                    <rect key="frame" x="0.0" y="118" width="393" height="666"/>
+                    <subviews>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Nhập URL video" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sg2-5V-OZ9">
+                            <rect key="frame" x="16" y="8" width="267" height="34"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits"/>
+                        </textField>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="irr-R0-NNt">
+                            <rect key="frame" x="291" y="15.333333333333341" width="86" height="19.333333333333329"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="86" id="kIg-XR-Ghg"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="tintColor" red="0.1176470588" green="0.16078431369999999" blue="0.18039215689999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <inset key="imageEdgeInsets" minX="-4" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="Tải xuống" image="arrow.down.circle.fill" catalog="system">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="actionDownload:" destination="-1" eventType="touchUpInside" id="1dn-hQ-pGg"/>
+                            </connections>
+                        </button>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="CK3-en-RDH">
+                            <rect key="frame" x="0.0" y="50" width="393" height="616"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </tableView>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="sg2-5V-OZ9" firstAttribute="leading" secondItem="KNC-7U-flj" secondAttribute="leading" constant="16" id="0Cl-dJ-xkg"/>
+                        <constraint firstAttribute="bottom" secondItem="CK3-en-RDH" secondAttribute="bottom" id="0QX-7V-u55"/>
+                        <constraint firstAttribute="trailing" secondItem="CK3-en-RDH" secondAttribute="trailing" id="1cY-4E-gqP"/>
+                        <constraint firstItem="CK3-en-RDH" firstAttribute="top" secondItem="sg2-5V-OZ9" secondAttribute="bottom" constant="8" id="Sdo-eV-6w0"/>
+                        <constraint firstItem="irr-R0-NNt" firstAttribute="centerY" secondItem="sg2-5V-OZ9" secondAttribute="centerY" id="UMT-Uq-4vv"/>
+                        <constraint firstItem="CK3-en-RDH" firstAttribute="leading" secondItem="KNC-7U-flj" secondAttribute="leading" id="XX9-EQ-Hp0"/>
+                        <constraint firstAttribute="trailing" secondItem="irr-R0-NNt" secondAttribute="trailing" constant="16" id="f7J-Fz-sDC"/>
+                        <constraint firstItem="irr-R0-NNt" firstAttribute="leading" secondItem="sg2-5V-OZ9" secondAttribute="trailing" constant="8" id="u5Z-FH-bpu"/>
+                        <constraint firstItem="sg2-5V-OZ9" firstAttribute="top" secondItem="KNC-7U-flj" secondAttribute="top" constant="8" id="xIT-Ec-lia"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="KNC-7U-flj" secondAttribute="bottom" id="Cjn-5T-kNI"/>
+                <constraint firstItem="KNC-7U-flj" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="MIw-L2-cQw"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="KNC-7U-flj" secondAttribute="trailing" id="NiJ-z6-Rj1"/>
+                <constraint firstItem="KNC-7U-flj" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="rKZ-Q9-gWF"/>
+            </constraints>
+            <point key="canvasLocation" x="218" y="13"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="arrow.down.circle.fill" catalog="system" width="128" height="123"/>
+    </resources>
+</document>

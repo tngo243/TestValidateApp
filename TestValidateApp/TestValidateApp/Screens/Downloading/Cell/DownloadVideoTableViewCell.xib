@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="123" id="KGk-i7-Jjw" customClass="DownloadVideoTableViewCell" customModule="TestValidateApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="457" height="123"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="457" height="123"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cBc-V3-D8G">
+                        <rect key="frame" x="16" y="8" width="425" height="89.666666666666671"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n32-hb-jgN">
+                                <rect key="frame" x="16.000000000000004" y="15.999999999999998" width="41.333333333333343" height="19.333333333333329"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPS-bM-gep">
+                                <rect key="frame" x="16" y="43.333333333333336" width="393" height="14.333333333333336"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5JV-16-Vzj">
+                                <rect key="frame" x="16" y="69.666666666666671" width="393" height="4"/>
+                                <color key="tintColor" red="0.0" green="0.96078431369999995" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </progressView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9y9-WY-c3Y">
+                                <rect key="frame" x="379" y="12.333333333333332" width="30" height="26.999999999999996"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Huỷ">
+                                    <color key="titleColor" systemColor="systemRedColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="actionCancelDownload:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="XWH-eU-uI8"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="n32-hb-jgN" firstAttribute="leading" secondItem="cBc-V3-D8G" secondAttribute="leading" constant="16" id="20F-tg-cmB"/>
+                            <constraint firstAttribute="trailing" secondItem="5JV-16-Vzj" secondAttribute="trailing" constant="16" id="2wc-aZ-42v"/>
+                            <constraint firstAttribute="trailing" secondItem="9y9-WY-c3Y" secondAttribute="trailing" constant="16" id="8Fm-jP-121"/>
+                            <constraint firstItem="5JV-16-Vzj" firstAttribute="leading" secondItem="cBc-V3-D8G" secondAttribute="leading" constant="16" id="Ha9-VS-enG"/>
+                            <constraint firstItem="5JV-16-Vzj" firstAttribute="top" secondItem="cPS-bM-gep" secondAttribute="bottom" constant="12" id="IgI-XT-X6Y"/>
+                            <constraint firstItem="cPS-bM-gep" firstAttribute="leading" secondItem="cBc-V3-D8G" secondAttribute="leading" constant="16" id="OSk-Bb-IWg"/>
+                            <constraint firstItem="n32-hb-jgN" firstAttribute="top" secondItem="cBc-V3-D8G" secondAttribute="top" constant="16" id="P5g-gc-z1c"/>
+                            <constraint firstAttribute="trailing" secondItem="cPS-bM-gep" secondAttribute="trailing" constant="16" id="WxJ-18-cHS"/>
+                            <constraint firstAttribute="bottom" secondItem="5JV-16-Vzj" secondAttribute="bottom" constant="16" id="XI3-fl-Y7Z"/>
+                            <constraint firstItem="9y9-WY-c3Y" firstAttribute="centerY" secondItem="n32-hb-jgN" secondAttribute="centerY" id="fre-2c-zRO"/>
+                            <constraint firstItem="9y9-WY-c3Y" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="n32-hb-jgN" secondAttribute="trailing" constant="16" id="kiD-3e-diM"/>
+                            <constraint firstItem="cPS-bM-gep" firstAttribute="top" secondItem="n32-hb-jgN" secondAttribute="bottom" constant="8" id="pr5-Jo-0la"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="cBc-V3-D8G" secondAttribute="trailing" constant="16" id="6Mg-Mw-AkQ"/>
+                    <constraint firstItem="cBc-V3-D8G" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="Esr-ib-vLM"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="cBc-V3-D8G" secondAttribute="bottom" constant="8" id="Yew-ep-gHH"/>
+                    <constraint firstItem="cBc-V3-D8G" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="Zln-Wy-7HS"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="nameFileLabel" destination="n32-hb-jgN" id="EgV-V6-Vgz"/>
+                <outlet property="progressView" destination="5JV-16-Vzj" id="9ok-Av-3DF"/>
+                <outlet property="urlDetailLabel" destination="cPS-bM-gep" id="0Ft-MB-gtr"/>
+            </connections>
+            <point key="canvasLocation" x="171.75572519083968" y="-30.633802816901412"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
