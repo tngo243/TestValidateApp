@@ -6,18 +6,31 @@
 //
 
 #import "SceneDelegate.h"
+#import "TestValidateApp-Swift.h"
 
 @interface SceneDelegate ()
-
+@property (strong, nonatomic) AppCoordinator *appCoordinator;
 @end
 
 @implementation SceneDelegate
 
-
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+    
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+    if (!windowScene) {
+        return;
+    }
+    
+    self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] init];
+    [navigationController setNavigationBarHidden:YES animated:NO];
+    
+    self.appCoordinator = [[AppCoordinator alloc] initWithNavigationController:navigationController];
+    [self.appCoordinator start];
+    
+    self.window.rootViewController = navigationController;
+    [self.window makeKeyAndVisible];
 }
 
 
