@@ -43,10 +43,10 @@ class TabBarCoordinator: BaseCoordinator {
         navigationController.setViewControllers([tabBarController!], animated: false)
     }
     
-//    func presentVideoPlayer(with videoData: VideoData) {
-//        let videoPlayerCoordinator = VideoPlayerCoordinator(navigationController: navigationController)
-//        videoPlayerCoordinator.parentCoordinator = self
-//        addChild(videoPlayerCoordinator)
-//        videoPlayerCoordinator.start(with: videoData)
-//    }
+    func presentVideoPlayer(with videoData: VideoData) {
+        let videoPlayerCoordinator = VideoPlayerCoordinator(navigationController: navigationController)
+        videoPlayerCoordinator.parentCoordinator = self
+        addChild(videoPlayerCoordinator)
+        videoPlayerCoordinator.start(with: videoData)
+    }
 }

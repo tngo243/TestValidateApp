@@ -22,7 +22,7 @@ class VideoListCoordinator: BaseCoordinator {
         navigationController.setViewControllers([viewController], animated: false)
     }
     
-//    func showVideoPlayer(with videoData: VideoData) {
-//        parentCoordinator?.presentVideoPlayer(with: videoData)
-//    }
+    func showVideoPlayer(with videoData: VideoData) {
+        parentCoordinator?.presentVideoPlayer(with: videoData)
+    }
 }

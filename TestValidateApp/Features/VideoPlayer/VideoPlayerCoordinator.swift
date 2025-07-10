@@ -12,21 +12,26 @@ class VideoPlayerCoordinator: BaseCoordinator {
     var childCoordinators: [BaseCoordinator] = []
     weak var parentCoordinator: TabBarCoordinator?
     
+    private var videoData: VideoData?
+    
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
     
-    func start(/*with videoData: VideoData*/) {
-//        let viewModel = VideoPlayerViewModel(coordinator: self, videoData: videoData)
-//        let viewController = VideoPlayerViewController(viewModel: viewModel)
-        let viewModel = VideoPlayerViewModel(coordinator: self)
+    func start() {
+        guard let videoData else {
+            print("Video data not set")
+            return
+        }
+        let viewModel = VideoPlayerViewModel(videoData: videoData, coordinator: self)
         let viewController = VideoPlayerViewController(viewModel: viewModel)
 
-        // Present full screen from bottom like YouTube
-        viewController.modalPresentationStyle = .fullScreen
-        viewController.modalTransitionStyle = .coverVertical
-        
-        navigationController.present(viewController, animated: true)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func start(with videoData: VideoData) {
+        self.videoData = videoData
+        start()
     }
     
     func dismissVideoPlayer() {

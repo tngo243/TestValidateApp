@@ -35,6 +35,12 @@ protocol DownloadVideoViewModelInput {
     }
     
     @objc func downloadVideo(url: String) {
+        if UserDefaults.standard.isVideoDownloaded(remoteURL: url) ||
+            listVideoDownloadingItem.contains(where: { $0.link == url }) {
+            print("Video is already downloaded or in progress.")
+            return
+        }
+        
         let name = "Video-\(Int(Date().timeIntervalSince1970 * 1000))"
 
         // Add new downloadTask to the list
@@ -42,15 +48,17 @@ protocol DownloadVideoViewModelInput {
         listVideoDownloadingItem.append(newDownloadItem)
         delegate?.downloadVideoViewModelUpdateListItem(self)
         
+        // Download video and save it
         videoDownloadManager?.downloadVideo(url: url, title: name) { result in
             switch result {
             case .success(let location):
-                print("Download completed successfully: \(location)")
-//                statusLabel.text = "Tải xuống thành công"
-//                
-//                // Use the downloaded video
-//                useDownloadedVideo(at: location)
-                
+                self.updateDownloadItemStatus(url: url, status: .completed)
+                self.delegate?.downloadVideoViewModelUpdateListItem(self)
+                if let bookmark = try? location.bookmarkData() {
+                    let thumbnail = Helper.generateThumbnail(for: location)
+                    print("-->> anhne", thumbnail != nil)
+                    UserDefaults.standard.saveDownloadedVideo(remoteURL: url, localURLbookmark: bookmark, name: name, thumbnail: thumbnail)
+                }
             case .failure(let error):
                 print("Download failed: \(error.localizedDescription)")
 //                statusLabel.text = "Lỗi: \(error.localizedDescription)"
@@ -63,17 +71,22 @@ protocol DownloadVideoViewModelInput {
     
     @objc func viewDidLoad() {
         self.videoDownloadManager?.progressPublisher
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] (url, percentage) in
                 guard let self else { return }
-                self.listVideoDownloadingItem.forEach { model in
-                    print(model.link)
-                }
-                let model = self.listVideoDownloadingItem.first { $0.link == url }
-                model?.status = .downloading
-                model?.progress = percentage
-                
+                print("Download progress: \(percentage)%")
+                self.updateDownloadItemStatus(url: url, percentage: percentage)
                 self.delegate?.downloadVideoViewModelUpdateListItem(self)
             }.store(in: &self.disposeBag)
+    }
+}
+
+// MARK: - Helper Methods
+private extension DownloadVideoViewModel {
+    func updateDownloadItemStatus(url: String, status: DownloadStatus = .downloading, percentage: Int = 0) {
+        let model = self.listVideoDownloadingItem.first { $0.link == url }
+        model?.status = status
+        model?.progress = percentage
+        
+        self.delegate?.downloadVideoViewModelUpdateListItem(self)
     }
 }

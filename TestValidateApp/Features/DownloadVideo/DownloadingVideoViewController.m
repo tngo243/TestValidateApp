@@ -16,7 +16,6 @@
 @property (weak, nonatomic) IBOutlet UIView *tableViewWrapView;
 @property (weak, nonatomic) IBOutlet UITableView *downloadListTableView;
 
-//@property (nonatomic, strong) NSArray<DownloadTableCellModel *> *listDownloadItem;
 @end
 
 @implementation DownloadingVideoViewController
@@ -35,6 +34,17 @@
     [self setUpUI];
     [self setUpTableView];
     [self.viewModel viewDidLoad];
+    [self setUpKeyBoard];
+}
+
+- (void)setUpKeyBoard {
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
+    tapGesture.cancelsTouchesInView = NO; // This allows other controls to receive touch events
+    [self.view addGestureRecognizer:tapGesture];
+}
+
+- (void)dismissKeyboard {
+    [self.view endEditing:YES];
 }
 
 - (void)setUpTableView {
@@ -62,11 +72,10 @@
     self.downloadButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     
     [self.tableViewWrapView roundCornersWithCorners:kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner radius:24];
-
 }
+
 - (IBAction)downloadTapped:(UIButton *)sender {
     NSString *urlString = self.urlTextField.text;
-    NSLog(@"Download URL: %@", urlString);
     [_viewModel downloadVideoWithUrl:urlString];
 }
 
@@ -88,14 +97,16 @@
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"Did select row %ld", (long)indexPath.row);
 }
 
 #pragma mark - ViewModel
 //@objc func userListViewModelDidStartLoading(_ viewModel: DownloadVideoViewModel)
 //@objc func downloadVideoViewModel(_ viewModel: DownloadVideoViewModel, didFinishWithSuccess success: Bool)
 - (void)downloadVideoViewModelUpdateListItem:(DownloadVideoViewModel *)viewModel {
-    [self.downloadListTableView reloadData];
+    // on main queue
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.downloadListTableView reloadData];
+    });
 }
 - (void)downloadVideoViewModel:(DownloadVideoViewModel *)viewModel didFinishWithSuccess:(BOOL)success {
     NSLog(@"View model finished loading with success: %@", success ? @"YES" : @"NO");

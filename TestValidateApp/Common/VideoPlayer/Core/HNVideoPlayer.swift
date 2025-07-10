@@ -46,6 +46,10 @@ open class HNVideoPlayer: UIViewController {
             }
         }
     }
+    
+    open func playerLayer() -> AVPlayerLayer {
+        return self.playerView.playerLayer
+    }
 
     private var playerView: HNPlayerView = HNPlayerView(frame: .zero)
     

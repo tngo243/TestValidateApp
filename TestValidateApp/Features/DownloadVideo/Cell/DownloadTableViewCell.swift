@@ -26,6 +26,7 @@ import UIKit
         
         titleLabel.font = HNFont.bodyEmphasized.font
         subtitleLabel.font = HNFont.subheadlineRegular.font
+        downloadingLabel.font = HNFont.helpTextEmphasized.font
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -42,12 +43,16 @@ import UIKit
             indicator.isHidden = false
             indicator.startAnimating()
             downloadingLabel.text = "\(cellModel.progress)%"
+            downloadingLabel.textColor = HNColor.Text.information
         case .completed:
             checkMarkIcon.isHidden = false
             indicator.isHidden = true
             
             checkMarkIcon.image = UIImage(systemName: "checkmark.circle.fill")
             checkMarkIcon.tintColor = .green
+            downloadingLabel.text = "Done"
+            downloadingLabel.textColor = .green
+            cancelButton.isHidden = true
         case .failed:
             checkMarkIcon.isHidden = false
             indicator.isHidden = true

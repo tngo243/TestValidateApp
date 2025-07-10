@@ -164,16 +164,14 @@ extension VideoDownloadManager: AVAssetDownloadDelegate {
             percentComplete += loadedTimeRange.duration.seconds / timeRangeExpectedToLoad.duration.seconds
         }
         
-        print("Download progress: \(percentComplete * 100)%")
-        
-        // Notify progress if needed
+        // Notify
         if let taskURL = findURLForTask(assetDownloadTask) {
-            print("Progress for \(taskURL): \(percentComplete * 100)%")
             progressSubject.send((url: taskURL, percentage: Int(percentComplete * 100)))
         }
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        print("Success cung vao day")
         guard let assetDownloadTask = task as? AVAssetDownloadTask else { return }
         
         let taskURL = findURLForTask(assetDownloadTask)
