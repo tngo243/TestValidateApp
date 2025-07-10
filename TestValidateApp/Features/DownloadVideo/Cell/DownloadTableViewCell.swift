@@ -9,6 +9,7 @@ import UIKit
 
 @objc class DownloadTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var borderView: UIView!
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var checkMarkIcon: UIImageView!
     @IBOutlet weak var downloadingLabel: UILabel!
@@ -18,11 +19,48 @@ import UIKit
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        cancelButton.tintColor = .red
+        borderView.layer.cornerRadius = 16
+        borderView.layer.borderWidth = 2
+        borderView.layer.borderColor = HNColor.Border.default.cgColor
+        
+        titleLabel.font = HNFont.bodyEmphasized.font
+        subtitleLabel.font = HNFont.subheadlineRegular.font
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
     
+    @objc func setUpCell(cellModel: DownloadTableCellModel) {
+        titleLabel.text = cellModel.videoName
+        subtitleLabel.text = cellModel.link
+        
+        switch cellModel.status {
+        case .downloading:
+            checkMarkIcon.isHidden = true
+            indicator.isHidden = false
+            indicator.startAnimating()
+            downloadingLabel.text = "\(cellModel.progress)%"
+        case .completed:
+            checkMarkIcon.isHidden = false
+            indicator.isHidden = true
+            
+            checkMarkIcon.image = UIImage(systemName: "checkmark.circle.fill")
+            checkMarkIcon.tintColor = .green
+        case .failed:
+            checkMarkIcon.isHidden = false
+            indicator.isHidden = true
+            
+            checkMarkIcon.image = UIImage(systemName: "xmark.circle.fill")
+            checkMarkIcon.tintColor = .red
+        case .cancelled:
+            checkMarkIcon.isHidden = false
+            indicator.isHidden = true
+            
+            checkMarkIcon.image = UIImage(systemName: "xmark.circle.fill")
+            checkMarkIcon.tintColor = .red
+        }
+    }
     
 }

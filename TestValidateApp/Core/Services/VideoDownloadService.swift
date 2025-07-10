@@ -7,13 +7,18 @@
 
 import Foundation
 import AVFoundation
+import Combine
 
 class VideoDownloadManager: NSObject {
     
     // MARK: - Properties
     private var assetURLSession: AVAssetDownloadURLSession?
     private var activeDownloads: [String: AVAssetDownloadTask] = [:]
+    private let progressSubject = PassthroughSubject<(url: String, percentage: Int), Never>()
     
+    var progressPublisher: AnyPublisher<(url: String, percentage: Int), Never> {
+        progressSubject.eraseToAnyPublisher()
+    }
     // MARK: - Singleton
     static let shared = VideoDownloadManager()
     
@@ -162,11 +167,9 @@ extension VideoDownloadManager: AVAssetDownloadDelegate {
         print("Download progress: \(percentComplete * 100)%")
         
         // Notify progress if needed
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .downloadProgress, object: nil, userInfo: [
-                "progress": percentComplete,
-                "task": assetDownloadTask
-            ])
+        if let taskURL = findURLForTask(assetDownloadTask) {
+            print("Progress for \(taskURL): \(percentComplete * 100)%")
+            progressSubject.send((url: taskURL, percentage: Int(percentComplete * 100)))
         }
     }
     

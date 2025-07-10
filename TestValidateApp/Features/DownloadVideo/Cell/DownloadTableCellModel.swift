@@ -14,15 +14,15 @@
 
 @objcMembers
 public class DownloadTableCellModel: NSObject {
-    public var title: String
-    public var subtitle: String
+    public var videoName: String
+    public var link: String
     public var status: DownloadStatus
-    public var progress: Double = 0.0  // Only for `.downloading`
+    public var progress: Int = 0  // Only for `.downloading`
     public var errorMessage: String?   // Only for `.failed`
 
-    public init(title: String, subtitle: String, status: DownloadStatus, progress: Double = 0.0, errorMessage: String? = nil) {
-        self.title = title
-        self.subtitle = subtitle
+    public init(videoName: String, link: String, status: DownloadStatus, progress: Int = 0, errorMessage: String? = nil) {
+        self.videoName = videoName
+        self.link = link
         self.status = status
         self.progress = progress
         self.errorMessage = errorMessage

@@ -10,8 +10,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class DownloadVideoViewModel;
+@protocol DownloadVideoViewModelDelegate;
 
-@interface DownloadingVideoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface DownloadingVideoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, DownloadVideoViewModelDelegate>
 
 - (instancetype)initWithViewModel:(DownloadVideoViewModel *)viewModel;
 

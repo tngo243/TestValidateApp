@@ -6,6 +6,7 @@
 //
 
 import ObjectiveC
+import Combine
 
 protocol BaseViewModelProtocol {
     var coordinator: BaseCoordinator? { get set }
@@ -13,6 +14,7 @@ protocol BaseViewModelProtocol {
 
 class BaseViewModel: NSObject, BaseViewModelProtocol {
     weak var coordinator: BaseCoordinator?
+    var disposeBag = Set<AnyCancellable>()
     
     init(coordinator: BaseCoordinator) {
         self.coordinator = coordinator

@@ -16,7 +16,7 @@
 @property (weak, nonatomic) IBOutlet UIView *tableViewWrapView;
 @property (weak, nonatomic) IBOutlet UITableView *downloadListTableView;
 
-@property (nonatomic, strong) NSArray<DownloadTableCellModel *> *listDownloadItem;
+//@property (nonatomic, strong) NSArray<DownloadTableCellModel *> *listDownloadItem;
 @end
 
 @implementation DownloadingVideoViewController
@@ -25,6 +25,7 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _viewModel = viewModel;
+        _viewModel.delegate = self;
     }
     return self;
 }
@@ -33,9 +34,13 @@
     [super viewDidLoad];
     [self setUpUI];
     [self setUpTableView];
+    [self.viewModel viewDidLoad];
 }
 
 - (void)setUpTableView {
+    [self.downloadListTableView setContentInset:UIEdgeInsetsMake(8, 0, 100, 0)];
+    self.downloadListTableView.showsVerticalScrollIndicator = NO;
+    self.downloadListTableView.showsHorizontalScrollIndicator = NO;
     self.downloadListTableView.estimatedRowHeight = 100.0;
     self.downloadListTableView.rowHeight = UITableViewAutomaticDimension;
 
@@ -44,18 +49,6 @@
     
     UINib *nib = [UINib nibWithNibName:@"DownloadTableViewCell" bundle:nil];
     [self.downloadListTableView registerNib:nib forCellReuseIdentifier:@"DownloadTableViewCell"];
-    self.listDownloadItem = @[
-        [[DownloadTableCellModel alloc] initWithTitle:@"Video 1"
-                                                                              subtitle:@"Downloading..."
-                                                                                status:DownloadStatusDownloading
-                                                                               progress:0.2
-                                                                          errorMessage:nil],
-        [[DownloadTableCellModel alloc] initWithTitle:@"Video 2"
-                                                                              subtitle:@"Almost done"
-                                                                                status:DownloadStatusDownloading
-                                                                               progress:0.9
-                                                                          errorMessage:nil],
-    ];
 }
 
 - (void)setUpUI {
@@ -71,19 +64,23 @@
     [self.tableViewWrapView roundCornersWithCorners:kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner radius:24];
 
 }
+- (IBAction)downloadTapped:(UIButton *)sender {
+    NSString *urlString = self.urlTextField.text;
+    NSLog(@"Download URL: %@", urlString);
+    [_viewModel downloadVideoWithUrl:urlString];
+}
 
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.listDownloadItem.count; // hoặc count của mảng dữ liệu
+    return self.viewModel.getListVideoDownloadingItem.count; // hoặc count của mảng dữ liệu
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DownloadTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DownloadTableViewCell" forIndexPath:indexPath];
-    
-    cell.titleLabel.text = [NSString stringWithFormat:@"Title %ld", (long)indexPath.row];
-    cell.subtitleLabel.text = @"Subtitle here";
-    [cell.indicator startAnimating];
+
+    DownloadTableCellModel *cellModel = [self.viewModel getListVideoDownloadingItem][indexPath.row];
+    [cell setUpCellWithCellModel:cellModel];
 
     return cell;
 }
@@ -94,16 +91,14 @@
     NSLog(@"Did select row %ld", (long)indexPath.row);
 }
 
-@end
+#pragma mark - ViewModel
+//@objc func userListViewModelDidStartLoading(_ viewModel: DownloadVideoViewModel)
+//@objc func downloadVideoViewModel(_ viewModel: DownloadVideoViewModel, didFinishWithSuccess success: Bool)
+- (void)downloadVideoViewModelUpdateListItem:(DownloadVideoViewModel *)viewModel {
+    [self.downloadListTableView reloadData];
+}
+- (void)downloadVideoViewModel:(DownloadVideoViewModel *)viewModel didFinishWithSuccess:(BOOL)success {
+    NSLog(@"View model finished loading with success: %@", success ? @"YES" : @"NO");
+}
 
-////- (IBAction)didTouchButton:(UIButton *)sender {
-////    if (sender == self.startButton) {
-////        // TODO: Implement HLS download.
-////        NSLog(@"start");
-////    } else if (sender == self.playButton) {
-////        // TODO: Play downloaded video file.
-////        NSLog(@"play");
-////    }
-////}
-//
-//@end
+@end
