@@ -13,11 +13,16 @@ protocol CustomTabBarViewDelegate: AnyObject {
 
 class CustomTabBarView: UIView {
     @IBOutlet weak var backgroundView: UIView!
+    @IBOutlet weak var leftIcon: UIImageView!
+    @IBOutlet weak var leftLabel: UILabel!
+    @IBOutlet weak var rightIcon: UIImageView!
+    @IBOutlet weak var rightLabel: UILabel!
+    
+    private var listSelectView: [[UIView]] = [[], []]
     
     weak var delegate: CustomTabBarViewDelegate?
     private var selectedIndex = 0
     
-    // init with xib
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -28,20 +33,42 @@ class CustomTabBarView: UIView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        backgroundView.clipsToBounds = true
-        backgroundView.layer.cornerRadius = 16
-        backgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        backgroundView.roundCorners(corners: [.layerMinXMinYCorner, .layerMaxXMinYCorner], radius: 16)
+        leftLabel.font = HNFont.captionEmphasized.font
+        rightLabel.font = HNFont.captionEmphasized.font
+        listSelectView[0] = [leftIcon, leftLabel]
+        listSelectView[1] = [rightIcon, rightLabel]
+        self.backgroundView.backgroundColor = HNColor.neutral(.black(.p10)).color
+        updateSelection(selectedIndex: selectedIndex)
     }
-
     
     private func updateSelection(selectedIndex: Int) {
         self.selectedIndex = selectedIndex
         
-//        for (index, view) in stackView.arrangedSubviews.enumerated() {
-//            if let button = view as? UIButton {
-//                button.tintColor = index == selectedIndex ? .systemBlue : .systemGray
-//            }
-//        }
+        listSelectView[selectedIndex].forEach { view in
+            if let label = view as? UILabel {
+                label.textColor = HNColor.Text.brand
+            } else if let imageView = view as? UIImageView {
+                imageView.tintColor = HNColor.Icon.brand
+            }
+        }
+        
+        listSelectView[1 - selectedIndex].forEach { view in
+            if let label = view as? UILabel {
+                label.textColor = HNColor.Text.default
+            } else if let imageView = view as? UIImageView {
+                imageView.tintColor = HNColor.Icon.default
+            }
+        }
     }
+    @IBAction func leftButtonTapped(_ sender: Any) {
+        delegate?.tabBarView(self, didSelectTabAt: 0)
+        updateSelection(selectedIndex: 0)
+    }
+    
+    @IBAction func rightButtonTapped(_ sender: Any) {
+        delegate?.tabBarView(self, didSelectTabAt: 1)
+        updateSelection(selectedIndex: 1)
+    }
+    
 }

@@ -18,9 +18,7 @@ class DownloadVideoCoordinator: BaseCoordinator {
     
     func start() {
         let viewModel = DownloadVideoViewModel(coordinator: self)
-        guard let viewController = DownloadVideoViewController(viewModel: viewModel) else {
-            return
-        }
+        let viewController = DownloadingVideoViewController(viewModel: viewModel)
         navigationController.setViewControllers([viewController], animated: false)
     }
 }
