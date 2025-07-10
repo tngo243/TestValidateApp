@@ -1,0 +1,31 @@
+//
+//  VideosSavedNavigator.swift
+//  TestValidateApp
+//
+//  Created by Linh Vu on 9/7/25.
+//
+
+import Foundation
+import UIKit
+
+protocol VideosSavedNavigatorType: MakeVideosSaved, MakeAlert {
+    func makeViewController() -> UIViewController
+}
+
+protocol MakeVideosSaved {
+    func makeVideosSaved() -> any VideosSavedNavigatorType
+}
+
+extension MakeVideosSaved {
+    func makeVideosSaved() -> any VideosSavedNavigatorType {
+        return VideosSavedNavigator()
+    }
+}
+
+struct VideosSavedNavigator: VideosSavedNavigatorType {
+    func makeViewController() -> UIViewController {
+        let viewModel = VideosSavedViewModel(navigator: self)
+        let viewController = VideosSavedViewController(viewModel: viewModel)
+        return viewController
+    }
+}
