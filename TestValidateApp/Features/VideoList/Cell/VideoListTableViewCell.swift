@@ -29,6 +29,7 @@ class VideoListTableViewCell: UITableViewCell {
         contentImageView.image = model.thumbnail
         titleLabel.text = model.title
         subtitleLabel.text = model.subtitle
+        contentImageView.image = .backgroundPlayer
     }
     
 }

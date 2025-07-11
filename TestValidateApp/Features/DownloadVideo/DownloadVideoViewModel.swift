@@ -10,7 +10,6 @@ import Foundation
 @objc protocol DownloadVideoViewModelDelegate: AnyObject {
     @objc func downloadVideoViewModelUpdateListItem(_ viewModel: DownloadVideoViewModel)
     @objc func downloadVideoViewModel(_ viewModel: DownloadVideoViewModel, didFinishWithSuccess success: Bool)
-//    func userListViewModel(_ viewModel: DownloadVideoViewModel, didFailWithError error: NSError)
 }
 
 protocol DownloadVideoViewModelInput {
@@ -23,7 +22,8 @@ protocol DownloadVideoViewModelInput {
     @objc weak var delegate: DownloadVideoViewModelDelegate?
     private var videoDownloadManager: VideoDownloadManager?
     private var listVideoDownloadingItem = [DownloadTableCellModel]()
-    
+    private let networkMonitor = NetworkConditionMonitor.shared
+
     @objc func setVideoDownloadManager(_ videoDownloadManager: VideoDownloadManager) {
         self.videoDownloadManager = videoDownloadManager
     }
@@ -35,9 +35,32 @@ protocol DownloadVideoViewModelInput {
     }
     
     @objc func downloadVideo(url: String) {
-        if UserDefaults.standard.isVideoDownloaded(remoteURL: url) ||
-            listVideoDownloadingItem.contains(where: { $0.link == url }) {
-            print("Video is already downloaded or in progress.")
+        let url = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard verifyUrl(urlString: url) else {
+            DispatchQueue.main.async {
+                Helpers.showAlert(title: "Invalid URL", message: "Please check your URL and try again.")
+            }
+            return
+        }
+        if !Helpers.isConnectedToNetwork() {
+            DispatchQueue.main.async {
+                Helpers.showAlert(title: "No Internet Connection", message: "Please check your internet connection and try again.")
+            }
+            return
+        }
+        
+        if UserDefaults.standard.isVideoDownloaded(remoteURL: url) {
+            DispatchQueue.main.async {
+                Helpers.showAlert(title: "Video Already Downloaded", message: "This video has already been downloaded.")
+            }
+            return
+        }
+        
+        if let item = listVideoDownloadingItem.first(where: { $0.link == url }),
+           item.status == .downloading || item.status == .completed {
+            DispatchQueue.main.async {
+                Helpers.showAlert(title: "Video Downloading", message: "This video is already being downloaded.")
+            }
             return
         }
         
@@ -49,22 +72,21 @@ protocol DownloadVideoViewModelInput {
         delegate?.downloadVideoViewModelUpdateListItem(self)
         
         // Download video and save it
-        videoDownloadManager?.downloadVideo(url: url, title: name) { result in
+        videoDownloadManager?.downloadVideo(url: url, title: name) { [weak self] result in
             switch result {
             case .success(let location):
-                self.updateDownloadItemStatus(url: url, status: .completed)
-                self.delegate?.downloadVideoViewModelUpdateListItem(self)
                 if let bookmark = try? location.bookmarkData() {
-                    let thumbnail = Helper.generateThumbnail(for: location)
-                    print("-->> anhne", thumbnail != nil)
-                    UserDefaults.standard.saveDownloadedVideo(remoteURL: url, localURLbookmark: bookmark, name: name, thumbnail: thumbnail)
+                    UserDefaults.standard.saveDownloadedVideo(remoteURL: url, localURLbookmark: bookmark, name: name)
+                }
+                if let self {
+                    self.updateDownloadItemStatus(url: url, status: .completed)
+                    self.delegate?.downloadVideoViewModelUpdateListItem(self)
                 }
             case .failure(let error):
-                print("Download failed: \(error.localizedDescription)")
-//                statusLabel.text = "Lỗi: \(error.localizedDescription)"
-//                
-//                // Handle specific errors
-//                handleDownloadError(error)
+                self?.updateDownloadItemStatus(url: url, status: .failed, error: error)
+                DispatchQueue.main.async {
+                    Helpers.showAlert(title: "Download Failed", message: error.localizedDescription)
+                }
             }
         }
     }
@@ -73,20 +95,44 @@ protocol DownloadVideoViewModelInput {
         self.videoDownloadManager?.progressPublisher
             .sink { [weak self] (url, percentage) in
                 guard let self else { return }
-                print("Download progress: \(percentage)%")
                 self.updateDownloadItemStatus(url: url, percentage: percentage)
                 self.delegate?.downloadVideoViewModelUpdateListItem(self)
             }.store(in: &self.disposeBag)
+        
+        self.videoDownloadManager?.cancelPublisher
+            .sink { [weak self] (url) in
+                guard let self else { return }
+                self.updateDownloadItemStatus(url: url, status: .cancelled)
+                self.delegate?.downloadVideoViewModelUpdateListItem(self)
+            }.store(in: &self.disposeBag)
+        
+        self.networkMonitor.onNetworkUnavailable
+            .sink { _ in
+                self.videoDownloadManager?.cancelAllDownloads()
+            }
+            .store(in: &disposeBag)
+
     }
 }
 
 // MARK: - Helper Methods
 private extension DownloadVideoViewModel {
-    func updateDownloadItemStatus(url: String, status: DownloadStatus = .downloading, percentage: Int = 0) {
-        let model = self.listVideoDownloadingItem.first { $0.link == url }
+    func updateDownloadItemStatus(url: String, status: DownloadStatus = .downloading, percentage: Int = 0, error: VideoDownloadManager.DownloadError? = nil) {
+        let model = self.listVideoDownloadingItem.first { $0.link == url && $0.status == .downloading }
         model?.status = status
         model?.progress = percentage
+        model?.errorMessage = error?.localizedDescription
         
         self.delegate?.downloadVideoViewModelUpdateListItem(self)
     }
+    
+    func verifyUrl(urlString: String?) -> Bool {
+        if let urlString = urlString {
+            if let url = URL(string: urlString) {
+                return UIApplication.shared.canOpenURL(url as URL)
+            }
+        }
+        return false
+    }
+
 }

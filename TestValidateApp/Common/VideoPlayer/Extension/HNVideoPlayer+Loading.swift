@@ -29,8 +29,6 @@ extension HNVideoPlayer {
             self.pause()
         }
 
-//        self.bufferingState = .unknown
-
         self._asset = asset
 
         self._asset?.loadValuesAsynchronously(forKeys: loadableKeys, completionHandler: { () -> Void in
@@ -43,18 +41,12 @@ extension HNVideoPlayer {
                 let status = asset.statusOfValue(forKey: key, error: &error)
                 if status == .failed {
                     self.playbackState = .failed
-                    self.executeOnMainQueueIfNeed {
-//                        self.playerDelegate?.player(self, didFailWithError: error)
-                    }
                     return
                 }
             }
 
             if !asset.isPlayable {
                 self.playbackState = .failed
-                self.executeOnMainQueueIfNeed {
-//                    self.playerDelegate?.player(self, didFailWithError: PlayerError.failed)
-                }
                 return
             }
 
@@ -64,8 +56,6 @@ extension HNVideoPlayer {
     }
 
     func setupPlayerItem(_ playerItem: AVPlayerItem?) {
-//        self.removePlayerItemObservers()
-
         if let currentPlayerItem = self.playerItem {
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentPlayerItem)
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemFailedToPlayToEndTime, object: currentPlayerItem)
@@ -74,9 +64,6 @@ extension HNVideoPlayer {
         self.playerItem = playerItem
 
         if let updatedPlayerItem = self.playerItem {
-//            self.addPlayerItemObservers()
-//            NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime(_:)), name: .AVPlayerItemDidPlayToEndTime, object: updatedPlayerItem)
-//            NotificationCenter.default.addObserver(self, selector: #selector(playerItemFailedToPlayToEndTime(_:)), name: .AVPlayerItemFailedToPlayToEndTime, object: updatedPlayerItem)
         }
 
         self.avplayer.replaceCurrentItem(with: self.playerItem)

@@ -49,10 +49,14 @@ class VideoListViewController: BaseViewController {
         videoListTableView.dataSource = self
         videoListTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         videoListTableView.register(UINib(nibName: "VideoListTableViewCell", bundle: nil), forCellReuseIdentifier: "VideoListTableViewCell")
+        videoListTableView.estimatedRowHeight = 100
     }
 }
 
 extension VideoListViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.listLocalVideo.count
     }

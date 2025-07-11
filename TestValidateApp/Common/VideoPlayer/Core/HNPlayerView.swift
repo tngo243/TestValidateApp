@@ -10,15 +10,11 @@ import AVFoundation
 
 public class HNPlayerView: UIView {
 
-    // MARK: - overrides
-
     public override class var layerClass: AnyClass {
         get {
             return AVPlayerLayer.self
         }
     }
-
-    // MARK: - internal properties
 
     internal var playerLayer: AVPlayerLayer {
         get {
@@ -35,8 +31,6 @@ public class HNPlayerView: UIView {
             self.playerLayer.isHidden = (self.playerLayer.player == nil)
         }
     }
-
-    // MARK: - public properties
 
     public var playerBackgroundColor: UIColor? {
         get {
@@ -64,8 +58,6 @@ public class HNPlayerView: UIView {
             return self.playerLayer.isReadyForDisplay
         }
     }
-
-    // MARK: - object lifecycle
 
     public override init(frame: CGRect) {
         super.init(frame: frame)

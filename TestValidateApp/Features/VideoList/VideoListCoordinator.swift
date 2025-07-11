@@ -17,7 +17,7 @@ class VideoListCoordinator: BaseCoordinator {
     }
     
     func start() {
-        let viewModel = VideoListViewModel(coordinator: self)
+        let viewModel = VideoListViewModel(coordinator: self, videoDownloadManager: VideoDownloadManager.shared)
         let viewController = VideoListViewController(viewModel: viewModel)
         navigationController.setViewControllers([viewController], animated: false)
     }

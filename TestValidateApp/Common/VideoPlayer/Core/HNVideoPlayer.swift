@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-open class HNVideoPlayer: UIViewController {
+public class HNVideoPlayer: UIViewController {
     public enum PlaybackState {
         case stopped
         case playing
@@ -24,6 +24,7 @@ open class HNVideoPlayer: UIViewController {
         avplayer.actionAtItemEnd = .pause
         return avplayer
     }()
+    var overlay: HNVideoPlayerOverlay?
     var playerItem: AVPlayerItem?
     
     // config sources
@@ -69,14 +70,6 @@ open class HNVideoPlayer: UIViewController {
     deinit {
         self.avplayer.pause()
         self.setupPlayerItem(nil)
-//
-//        self.removePlayerObservers()
-//
-//        self.removeApplicationObservers()
-//
-//        self.removePlayerLayerObservers()
-//
-//        self._playerView.player = nil
     }
 
     // MARK: -  Lifecycle of the View
@@ -95,10 +88,6 @@ open class HNVideoPlayer: UIViewController {
         } else if let asset = self.asset {
             setupAsset(asset)
         }
-
-//        self.addPlayerLayerObservers()
-//        self.addPlayerObservers()
-//        self.addApplicationObservers()
     }
 
     open override func viewDidDisappear(_ animated: Bool) {
@@ -106,5 +95,10 @@ open class HNVideoPlayer: UIViewController {
         if self.playbackState == .playing {
             self.pause()
         }
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        overlay?.resetState()
     }
 }

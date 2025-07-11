@@ -45,7 +45,6 @@ class VideoPlayerViewController: BaseViewController {
     
     override func setupUI() {
         informationTableView.backgroundColor = .clear
-        informationTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         
         self.player = HNVideoPlayer()
         self.player.view.frame = self.playerViewBound.bounds
@@ -61,6 +60,7 @@ class VideoPlayerViewController: BaseViewController {
             player.view.bottomAnchor.constraint(equalTo: playerViewBound.bottomAnchor)
         ])
         self.player.view.backgroundColor = UIColor.black
+        self.player.addPlayerOverlay()
     }
     
     private func setupTableView() {
@@ -103,5 +103,12 @@ extension VideoPlayerViewController: UITableViewDelegate, UITableViewDataSource 
             cell.configure(with: information)
             return cell
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            return
+        }
+        viewModel.moveToOtherVideo(at: indexPath.row - 1)
     }
 }

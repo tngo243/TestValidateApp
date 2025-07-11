@@ -14,10 +14,19 @@ class VideoDownloadManager: NSObject {
     // MARK: - Properties
     private var assetURLSession: AVAssetDownloadURLSession?
     private var activeDownloads: [String: AVAssetDownloadTask] = [:]
-    private let progressSubject = PassthroughSubject<(url: String, percentage: Int), Never>()
     
+    private let progressSubject = PassthroughSubject<(url: String, percentage: Int), Never>()
+    private let cancelSubject = PassthroughSubject<String, Never>()
+    private let successSubject = PassthroughSubject<String, Never>()
+
     var progressPublisher: AnyPublisher<(url: String, percentage: Int), Never> {
         progressSubject.eraseToAnyPublisher()
+    }
+    var cancelPublisher: AnyPublisher<String, Never> {
+        cancelSubject.eraseToAnyPublisher()
+    }
+    var successPublisher: AnyPublisher<String, Never> {
+        successSubject.eraseToAnyPublisher()
     }
     // MARK: - Singleton
     static let shared = VideoDownloadManager()
@@ -42,13 +51,11 @@ class VideoDownloadManager: NSObject {
             return
         }
         
-        // Check network connectivity
-        guard NetworkReachability.isConnected else {
+        guard Helpers.isConnectedToNetwork() else {
             completion(.failure(.noInternetConnection))
             return
         }
         
-        // Check if already downloading
         if activeDownloads[url] != nil {
             completion(.failure(.alreadyDownloading))
             return
@@ -73,10 +80,7 @@ class VideoDownloadManager: NSObject {
             return
         }
         
-        // Store the task
         activeDownloads[url] = downloadTask
-        
-        // Store completion handler
         downloadCompletions[url] = completion
         
         downloadTask.resume()
@@ -86,8 +90,18 @@ class VideoDownloadManager: NSObject {
         guard let downloadTask = activeDownloads[url] else { return }
         
         downloadTask.cancel()
+        cancelSubject.send(url)
         activeDownloads.removeValue(forKey: url)
         downloadCompletions.removeValue(forKey: url)
+    }
+    
+    func cancelAllDownloads() {
+        for (url, downloadTask) in activeDownloads {
+            downloadTask.cancel()
+            cancelSubject.send(url)
+            downloadCompletions.removeValue(forKey: url)
+        }
+        activeDownloads.removeAll()
     }
     
     func pauseDownload(url: String) {
@@ -138,56 +152,43 @@ class VideoDownloadManager: NSObject {
 extension VideoDownloadManager: AVAssetDownloadDelegate {
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didFinishDownloadingTo location: URL) {
-        print("Download finished to location: \(location)")
-        
-        // Find the corresponding URL
         let taskURL = findURLForTask(assetDownloadTask)
         
-        // Remove from active downloads
         if let url = taskURL {
             activeDownloads.removeValue(forKey: url)
-            
-            // Call completion handler
             if let completion = downloadCompletions[url] {
                 completion(.success(location))
                 downloadCompletions.removeValue(forKey: url)
             }
+            successSubject.send(url)
         }
     }
     
     func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didLoad timeRange: CMTimeRange, totalTimeRangesLoaded loadedTimeRanges: [NSValue], timeRangeExpectedToLoad: CMTimeRange) {
         
-        // Calculate progress
         var percentComplete = 0.0
         for value in loadedTimeRanges {
             let loadedTimeRange = value.timeRangeValue
             percentComplete += loadedTimeRange.duration.seconds / timeRangeExpectedToLoad.duration.seconds
         }
         
-        // Notify
         if let taskURL = findURLForTask(assetDownloadTask) {
             progressSubject.send((url: taskURL, percentage: Int(percentComplete * 100)))
         }
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        print("Success cung vao day")
         guard let assetDownloadTask = task as? AVAssetDownloadTask else { return }
         
         let taskURL = findURLForTask(assetDownloadTask)
         
         if let error = error {
-            print("Download failed with error: \(error.localizedDescription)")
-            
-            // Handle specific error types
             if (error as NSError).code == NSURLErrorCancelled {
-                // Download was cancelled
                 if let url = taskURL, let completion = downloadCompletions[url] {
                     completion(.failure(.cancelled))
                     downloadCompletions.removeValue(forKey: url)
                 }
             } else {
-                // Other download errors
                 if let url = taskURL, let completion = downloadCompletions[url] {
                     completion(.failure(.downloadFailed(error)))
                     downloadCompletions.removeValue(forKey: url)
@@ -195,14 +196,9 @@ extension VideoDownloadManager: AVAssetDownloadDelegate {
             }
         }
         
-        // Clean up
         if let url = taskURL {
             activeDownloads.removeValue(forKey: url)
         }
-    }
-    
-    func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask, didResolve resolvedMediaSelection: AVMediaSelection) {
-        print("Media selection resolved")
     }
     
     // Helper method to find URL for task
@@ -214,20 +210,4 @@ extension VideoDownloadManager: AVAssetDownloadDelegate {
         }
         return nil
     }
-}
-
-// MARK: - Network Reachability Helper
-class NetworkReachability {
-    static var isConnected: Bool {
-        // Implement network reachability check
-        // You can use Network framework or a third-party library
-        return true // Simplified for example
-    }
-}
-
-// MARK: - Notification Names
-extension Notification.Name {
-    static let downloadProgress = Notification.Name("downloadProgress")
-    static let downloadCompleted = Notification.Name("downloadCompleted")
-    static let downloadFailed = Notification.Name("downloadFailed")
 }

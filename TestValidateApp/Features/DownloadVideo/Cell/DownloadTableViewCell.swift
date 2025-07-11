@@ -17,6 +17,8 @@ import UIKit
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var cancelButton: UIButton!
     
+    public var cancelDownloadTrigger: (() -> Void)?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         cancelButton.tintColor = .red
@@ -27,6 +29,12 @@ import UIKit
         titleLabel.font = HNFont.bodyEmphasized.font
         subtitleLabel.font = HNFont.subheadlineRegular.font
         downloadingLabel.font = HNFont.helpTextEmphasized.font
+        
+        cancelButton.addTarget(self, action: #selector(cancelDownload), for: .touchUpInside)
+    }
+    
+    @objc func cancelDownload() {
+        cancelDownloadTrigger?()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -37,34 +45,34 @@ import UIKit
         titleLabel.text = cellModel.videoName
         subtitleLabel.text = cellModel.link
         
+        indicator.isHidden = cellModel.status != .downloading
+        checkMarkIcon.isHidden = cellModel.status == .downloading
+        cancelButton.isHidden = cellModel.status != .downloading
+        
         switch cellModel.status {
         case .downloading:
-            checkMarkIcon.isHidden = true
-            indicator.isHidden = false
             indicator.startAnimating()
             downloadingLabel.text = "\(cellModel.progress)%"
             downloadingLabel.textColor = HNColor.Text.information
         case .completed:
-            checkMarkIcon.isHidden = false
-            indicator.isHidden = true
-            
             checkMarkIcon.image = UIImage(systemName: "checkmark.circle.fill")
             checkMarkIcon.tintColor = .green
             downloadingLabel.text = "Done"
             downloadingLabel.textColor = .green
-            cancelButton.isHidden = true
         case .failed:
-            checkMarkIcon.isHidden = false
-            indicator.isHidden = true
-            
             checkMarkIcon.image = UIImage(systemName: "xmark.circle.fill")
             checkMarkIcon.tintColor = .red
+            downloadingLabel.text = "Failed"
+            downloadingLabel.textColor = .red
         case .cancelled:
-            checkMarkIcon.isHidden = false
-            indicator.isHidden = true
-            
             checkMarkIcon.image = UIImage(systemName: "xmark.circle.fill")
             checkMarkIcon.tintColor = .red
+            downloadingLabel.text = "Cancelled"
+            downloadingLabel.textColor = .red
+        }
+        
+        cancelDownloadTrigger = {
+            VideoDownloadManager.shared.cancelDownload(url: cellModel.link)
         }
     }
     

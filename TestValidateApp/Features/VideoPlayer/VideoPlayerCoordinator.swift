@@ -33,11 +33,4 @@ class VideoPlayerCoordinator: BaseCoordinator {
         self.videoData = videoData
         start()
     }
-    
-    func dismissVideoPlayer() {
-        navigationController.dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
-            self.parentCoordinator?.removeChild(self)
-        }
-    }
 }

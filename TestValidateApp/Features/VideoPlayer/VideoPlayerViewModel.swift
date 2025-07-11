@@ -17,6 +17,13 @@ class VideoPlayerViewModel: BaseViewModel {
         loadVideos()
     }
     
+    func moveToOtherVideo(at index: Int) {
+        let model = listOtherLocalVideo[index]
+        (coordinator as? VideoPlayerCoordinator)?.start(with: model.videoData)
+    }
+}
+
+private extension VideoPlayerViewModel {
     func loadVideos() {
         listOtherLocalVideo = UserDefaults.standard.getAllDownloadedVideosMappings().compactMap { (url, info) in
             if url == videoData.remoteURL {
@@ -26,5 +33,4 @@ class VideoPlayerViewModel: BaseViewModel {
             return VideoListCellModel(title: info.name, subtitle: url, thumbnail: nil, videoData: VideoData(name: info.name, remoteURL: url, localURL: localURL))
         }.sorted { $0.title < $1.title }
     }
-
 }

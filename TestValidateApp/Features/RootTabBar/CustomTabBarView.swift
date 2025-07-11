@@ -38,7 +38,6 @@ class CustomTabBarView: UIView {
         rightLabel.font = HNFont.captionEmphasized.font
         listSelectView[0] = [leftIcon, leftLabel]
         listSelectView[1] = [rightIcon, rightLabel]
-        self.backgroundView.backgroundColor = HNColor.neutral(.black(.p10)).color
         updateSelection(selectedIndex: selectedIndex)
     }
     
@@ -47,9 +46,9 @@ class CustomTabBarView: UIView {
         
         listSelectView[selectedIndex].forEach { view in
             if let label = view as? UILabel {
-                label.textColor = HNColor.Text.brand
+                label.textColor = .white
             } else if let imageView = view as? UIImageView {
-                imageView.tintColor = HNColor.Icon.brand
+                imageView.tintColor = .white
             }
         }
         
